@@ -2,41 +2,716 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SUPERNOVA</title>
   <style>
+    @font-face {
+      font-family: 'Game Paused DEMO';
+      src: url('Game Paused DEMO (2).otf') format('opentype');
+    }
+
     body {
-      background-color: black;
+      margin: 0;
+      background-color: #000000;
       color: white;
       text-align: center;
-      font-family: italic;
+      font-family: sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
+
     .background-img {
       position: fixed;
       top: 0;
       left: 0;
+      width: 100vw;
+      height: 100vh;
       object-fit: cover;
+      z-index: -2;
+      opacity: 0.85; 
+      pointer-events: none;
+    }
+
+    #space-canvas {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
       z-index: -1;
+      top: 0;
+      left: 0;
+      pointer-events: none;
     }
 
-    h1 {
-      font-size: 10px;
+    .card-container {
+      position: relative;
+      z-index: 10;
+      max-width: 500px;
+      margin: 80px auto 20px auto;
+      padding: 40px 20px;
+      border-radius: 16px;
+    }
+    
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 30px;
     }
 
-    h2 {
-      font-size: 10px;
+    .input-group label {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .input-group input[type=text], .input-group input[type=date] {
+      padding: 10px 15px;
+      border-radius: 50px;
+      font-size: 1rem;
+      border: 1px solid #92434355;
+      background: rgba(80, 20, 20, 0.8);
+      color: white;
+      text-align: center;
+    }
+
+    .input-group button, .reset-btn, .generate-card-btn {
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 1rem;
+      background-color: rgba(30, 30, 35, 0.9);
+      color: white;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .input-group button:hover, .reset-btn:hover, .generate-card-btn:hover {
+      background-color: #ff7675;  
+      color: #000;
+    }
+  
+    h1, h2 {
+      font-size: 1rem;
       font-style: italic;
+      color: white;
+      margin: 10px 20px;
+      object-position: center; 
+    }
+
+    content {
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       margin-top: 20px;
+    }
+
+    h3 {
+      font-family: 'Game Paused DEMO';
+      font-size: 4rem;
+      position: relative;
+      white-space: nowrap;
+      margin: 10px;
+      width: max-content;
+      max-width: 95vw;
+      text-align: justify;
+      background: radial-gradient(
+        ellipse at top, 
+        #ffffff 20%, 
+        #e2e8f0 50%, 
+        #94a3b8 80%, 
+        #cbd5e1 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.8);
+      filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.5));
+    }
+
+    #result-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    .result-content {
+      position: relative;
+      z-index: 2;
+      max-width: 650px;
+      padding: 30px;
+      border-radius: 20px;
+      margin: auto;
+    }
+
+    .result-content h2 {
+      font-size: 1.8rem;
+      font-style: normal;
+      color: #ff7675;
+      margin-bottom: 15px;
+    }
+
+    .result-content p {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #ddd;
+      margin-bottom: 25px;
+    }
+
+    .certificate-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #af6c6c;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 20px 0;
+      box-shadow: 0 0 20px rgba(175, 108, 108, 0.3);
+    }
+
+    .cert-border {
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .cert-header {
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      color: #00d2ff;
+      margin: 0 0 10px 0;
+    }
+
+    .cert-body h3#cert-name {
+      font-family: sans-serif !important;
+      font-size: 2rem !important;
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+      background: transparent !important;
+      -webkit-text-stroke: 0px !important;
+      filter: none !important;
+      margin: 10px auto !important;
+      text-align: center !important;
+      white-space: normal !important;
+      font-weight: bold;
+    }
+
+    .cert-body h4 {
+      font-size: 1.1rem;
+      color: #ff7675;
+      margin: 5px 0;
+    }
+
+    .cert-code {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 10px;
+    }
+
+    .greeting-card-builder {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      margin-bottom: 15px;
+    }
+
+    .greeting-card-builder h4 {
+      margin: 0 0 10px 0;
+      font-size: 1rem;
+      color: #00d2ff;
+    }
+
+    .greeting-card-builder select, .greeting-card-builder input {
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid #555;
+      background: #111;
+      color: white;
+      margin: 5px;
+    }
+
+    .card-preview-box {
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      background: rgba(0, 210, 255, 0.05);
+    }
+
+    #greeting-text-display {
+      font-style: italic;
+      font-size: 0.95rem;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #00d2ff;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      margin: 5px;
+    }
+  
+    .action-btn:hover {
+      background: #ffffff;
     }
   </style>
 </head>
 <body>
+  <canvas id="space-canvas"></canvas>
 
-  <img class="background-img" src="https://images-assets.nasa.gov/image/PIA13118/PIA13118~orig.jpg" alt="Supernova">
+  <div id="input-screen">
+    <img class="background-img" src="https://images2.alphacoders.com/485/thumb-1920-485838.jpg" alt="Space Background">   
+    <div class="card-container">
+      <h3>Supernova Signature</h3>
+      <div class="input-group">
+        <label for="userNameInput">Enter your name:</label>
+        <input type="text" id="userNameInput" placeholder="Enter your name"/>
+        <label for="Birthday">Enter your birthdate:</label>
+        <input type="date" id="Birthday">
+        <button type="button" id="discover-btn" onclick="showSupernovaForDate()">Discover Supernova</button>
+      </div>
+    </div>
 
-  <div class="content">
-    <h1>"for a star to be born, there is one thing that must happen: a gaseous nebula must collapse under its own gravity"</h1>
-    <h2>this is not a destruction. This is your birth"</h2>
+    <div class="content">
+      <h1>"Universe shot a star in the sky</h1>
+      <h2>to create one on earth"</h2>
+    </div>
   </div>
 
+  <div id="result-screen">
+    <img id="supernova-bg" class="background-img" src="" alt="Supernova Remnant">
+    
+    <div class="result-content">
+      <h2 id="supernova-title">Loading...</h2>
+      <p id="supernova-description">Searching archives...</p>
+
+      <button type="button" class="generate-card-btn" id="show-card-btn" onclick="revealCardSection()">✦ Generate Certificate & Card</button>
+      
+      <div id="card-flow-container" style="display: none; margin-top: 20px;">
+        <div id="discovery-certificate" class="certificate-card">
+          <div class="cert-border">
+            <p class="cert-header">✦ OFFICIAL DISCOVERY CERTIFICATE ✦</p>
+            <div class="cert-body">
+              <p>This certifies that the cosmic event for date <span id="cert-date">YYYY-MM-DD</span> belongs to:</p>
+              <h3 id="cert-name">EXPLORER</h3>
+              <p>Linked Supernova Remnant:</p>
+              <h4 id="cert-supernova-title">ARCHIVAL RECORD</h4>
+              <p class="cert-code">Verification Code: <span id="cert-id">SN-000000</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="greeting-card-builder">
+          <h4>Create Cosmic Greeting Card</h4>
+          <div style="margin-bottom: 10px;">
+            <label for="card-mode" style="font-size: 0.9rem; font-weight: bold;">Card Format:</label><br>
+            <select id="card-mode" onchange="toggleCardMode()">
+              <option value="overlay">1. Single Image (Text on Photo)</option>
+              <option value="separate">2. Download Photo + Text Below</option>
+            </select>
+          </div>
+          
+          <select id="greeting-template" onchange="updateGreetingText()">
+            <option value="happy-birthday">Happy Birthday, Star!</option>
+            <option value="stardust">We are made of stardust.</option>
+            <option value="custom">Custom Message...</option>
+          </select>
+          <input type="text" id="custom-greeting" placeholder="Type your message..." style="display: none;" oninput="updateGreetingText()">
+          
+          <div class="card-preview-box">
+            <p id="greeting-text-display">"Happy Birthday! You share your birth year with this celestial supernova."</p>
+          </div>
+
+          <div id="overlay-actions">
+            <button type="button" class="action-btn" onclick="generateCombinedCard('copy')">📋 Copy Image</button>
+            <button type="button" class="action-btn" onclick="generateCombinedCard('download')">⬇ Download Image</button>
+          </div>
+
+          <div id="separate-actions" style="display: none;">
+            <button type="button" class="action-btn" onclick="processSeparateOutput()">🚀 Get Image & Copy Text</button>
+          </div>
+
+          <div style="margin-top: 10px;">
+            <button type="button" class="action-btn" onclick="copyGreetingCardLink()">📋 Copy Card Details</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button class="reset-btn" onclick="resetView()">Search Another Date</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const FAST_NASA_IMAGES = [
+      {
+        title: "Crab Nebula Supernova Remnant",
+        url: "https://images-assets.nasa.gov/image/PIA22081/PIA22081~medium.jpg",
+        desc: "The expanding cloud of gas and dust from a stellar explosion observed centuries ago."
+      },
+      {
+        title: "Cassiopeia A Stellar Explosion",
+        url: "https://images-assets.nasa.gov/image/PIA03519/PIA03519~medium.jpg",
+        desc: "A famous supernova remnant located approximately 11,000 light-years away."
+      },
+      {
+        title: "Tycho's Supernova Remnant",
+        url: "https://images-assets.nasa.gov/image/PIA13108/PIA13108~medium.jpg",
+        desc: "A brilliant Type Ia supernova remnant recorded in historic astronomical archives."
+      },
+      {
+        title: "Kepler's Supernova Cloud",
+        url: "https://images-assets.nasa.gov/image/PIA16604/PIA16604~medium.jpg",
+        desc: "The glowing remnant of a white dwarf star that exploded in a violent supernova."
+      },
+      {
+        title: "Vela Supernova Shockwave",
+        url: "https://images-assets.nasa.gov/image/PIA03512/PIA03512~medium.jpg",
+        desc: "Vast filaments of superheated cosmic dust expanding into interstellar space."
+      },
+      {
+        title: "Carina Nebula Cosmic Pillars",
+        url: "https://images-assets.nasa.gov/image/PIA15817/PIA15817~medium.jpg",
+        desc: "A turbulent star-forming region containing massive exploding stars."
+      },
+      {
+        title: "Orion Stellar Nursery",
+        url: "https://images-assets.nasa.gov/image/PIA04225/PIA04225~medium.jpg",
+        desc: "A vast cosmic cloud of gas and dust illuminated by nearby supergiant stars."
+      },
+      {
+        title: "Helix Nebula Cosmic Eye",
+        url: "https://images-assets.nasa.gov/image/PIA09178/PIA09178~medium.jpg",
+        desc: "A planetary nebula created by a dying star shedding its outer layers."
+      },
+      {
+        title: "Supernova Remnant N63A",
+        url: "https://images-assets.nasa.gov/image/PIA04221/PIA04221~medium.jpg",
+        desc: "An expanding shockwave in the Large Magellanic Cloud."
+      },
+      {
+        title: "Tarantula Nebula Core",
+        url: "https://images-assets.nasa.gov/image/PIA15415/PIA15415~medium.jpg",
+        desc: "The most active star-forming region in our galactic neighborhood."
+      }
+    ]
+
+    async function showSupernovaForDate() {
+      const userNameInput = document.getElementById('userNameInput');
+      const userName = userNameInput ? userNameInput.value.trim() : '';
+      const certName = document.getElementById('cert-name');
+      if (certName) certName.innerText = userName ? userName.toUpperCase() : 'EXPLORER';
+
+      const dateInput = document.getElementById("Birthday").value;
+      if (!dateInput) {
+        alert("Please select your birthdate first!");
+        return;
+      }
+
+      document.getElementById("card-flow-container").style.display = "none";
+      document.getElementById("show-card-btn").style.display = "inline-block";
+      document.getElementById("input-screen").style.display = "none";
+      document.getElementById("result-screen").style.display = "flex";
+
+      const titleEl = document.getElementById("supernova-title");
+      const descEl = document.getElementById("supernova-description");
+      const bgImg = document.getElementById("supernova-bg");
+
+      let dateHash = 0;
+      for (let i = 0; i < dateInput.length; i++) {
+        dateHash += dateInput.charCodeAt(i);
+      }
+
+      const fallbackItem = FAST_NASA_IMAGES[dateHash % FAST_NASA_IMAGES.length];
+      bgImg.src = fallbackItem.url;
+      titleEl.innerText = fallbackItem.title;
+      descEl.innerText = fallbackItem.desc;
+      populateCertificate(dateInput, fallbackItem.title);
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1500);
+        const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=${dateInput}`, {
+          signal: controller.signal
+        });
+        (timeoutId);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.media_type === 'image' && data.url) {
+            bgImg.src = data.url;
+            titleEl.innerText = data.title;
+            descEl.innerText = data.explanation ? (data.explanation.length > 220 ? data.explanation.substring(0, 220) + "..." : data.explanation) : "A cosmic discovery captured on this date in NASA history.";
+            populateCertificate(dateInput, data.title);
+          }
+        }
+      } catch (err) {
+      }
+    }
+
+    function revealCardSection() {
+      const container = document.getElementById("card-flow-container");
+      container.style.display = "block";
+      document.getElementById("show-card-btn").style.display = "none";
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function populateCertificate(dateInput, supernovaTitle) {
+      const randomCode = "SN-" + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById("cert-date").innerText = dateInput;
+      document.getElementById("cert-id").innerText = randomCode;
+      document.getElementById("cert-supernova-title").innerText = supernovaTitle;
+    }
+
+    function updateGreetingText() {
+      const template = document.getElementById("greeting-template").value;
+      const customInput = document.getElementById("custom-greeting");
+      const display = document.getElementById("greeting-text-display");
+
+      if (template === "happy-birthday") {
+        customInput.style.display = "none";
+        display.innerText = `"Happy Birthday! You share your birth year with this celestial supernova."`;
+      } else if (template === "stardust") {
+        customInput.style.display = "none";
+        display.innerText = `"For a star to be born, a nebula must collapse. You are made of stardust."`;
+      } else if (template === "custom") {
+        customInput.style.display = "inline-block";
+        display.innerText = `"${customInput.value || 'Write your cosmic message...'}"`;
+      }
+    }
+
+    function copyGreetingCardLink() {
+      const text = document.getElementById("greeting-text-display").innerText;
+      const title = document.getElementById("supernova-title").innerText;
+      const imageUrl = document.getElementById("supernova-bg").src;
+      
+      const fullShareText = `${text}\n\n✦ Linked Supernova: ${title}\n✦ NASA Image Link: ${imageUrl}\n✦ Discovered on Supernova Signature!`;
+
+      navigator.clipboard.writeText(fullShareText);
+      alert("Greeting Card text & Image URL copied to clipboard!");
+    }
+
+    function resetView() {
+      document.getElementById("result-screen").style.display = "none";
+      document.getElementById("input-screen").style.display = "block";
+    }
+
+    function toggleCardMode() {
+      const mode = document.getElementById("card-mode").value;
+      if (mode === "overlay") {
+        document.getElementById("overlay-actions").style.display = "block";
+        document.getElementById("separate-actions").style.display = "none";
+      } else {
+        document.getElementById("overlay-actions").style.display = "none";
+        document.getElementById("separate-actions").style.display = "block";
+      }
+    }
+
+    async function generateCombinedCard(action) {
+      const text = document.getElementById("greeting-text-display").innerText;
+      const imageUrl = document.getElementById("supernova-bg").src;
+
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.src = URL.createObjectURL(blob);
+        await img.decode();
+
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(img, 0, 0);
+
+        const gradient = ctx.createLinearGradient(0, canvas.height - 250, 0, canvas.height);
+        gradient.addColorStop(0, "rgba(0,0,0,0)");
+        gradient.addColorStop(1, "rgba(0,0,0,0.85)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, canvas.height - 250, canvas.width, 250);
+
+        const fontSize = Math.max(24, Math.floor(canvas.width / 25));
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 10;
+
+        const words = text.split(' ');
+        let line = '';
+        let y = canvas.height - 80;
+        const maxWidth = canvas.width * 0.85;
+
+        for (let n = 0; n < words.length; n++) {
+          let testLine = line + words[n] + ' ';
+          let metrics = ctx.measureText(testLine);
+          if (metrics.width > maxWidth && n > 0) {
+            ctx.fillText(line, canvas.width / 2, y);
+            line = words[n] + ' ';
+            y += fontSize * 1.3;
+          } else {
+            line = testLine;
+          }
+        }
+        ctx.fillText(line, canvas.width / 2, y);
+
+        canvas.toBlob(async (pngBlob) => {
+          if (action === "download") {
+            const downloadUrl = URL.createObjectURL(pngBlob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+            a.download = "supernova-greeting-card.png";
+            a.click();
+            URL.revokeObjectURL(downloadUrl);
+          } else if (action === "copy") {
+            try {
+              await navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': pngBlob })
+              ]);
+              alert("Combined card image copied to clipboard!");
+            } catch (err) {
+              alert("Clipboard copy not supported. Use Download option!");
+            }
+          }
+        }, "image/png");
+
+      } catch (err) {
+        alert("Unable to process image. Make sure your internet connection is active!");
+      }
+    }
+
+    async function processSeparateOutput() {
+      const text = document.getElementById("greeting-text-display").innerText;
+      const title = document.getElementById("supernova-title").innerText;
+      const imageUrl = document.getElementById("supernova-bg").src;
+
+      const fullText = `${text}\n\n✦ Linked Supernova: ${title}\n✦ Discovered on Supernova Signature!`;
+
+      navigator.clipboard.writeText(fullText);
+
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = "supernova-remnant.jpg";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(downloadUrl);
+
+        alert("NASA Photo downloaded! Greeting text copied to clipboard.");
+      } catch (e) {
+        window.open(imageUrl, '_blank');
+        alert("Greeting text copied! Save the opened image to attach.");
+      }
+    }
+
+    const canvas = document.getElementById('space-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const particleCount = 100;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let mouse = { x: null, y: null };
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = (Math.random() - 0.5) * 0.4;
+        this.alpha = Math.random() * 0.8 + 0.2;
+        this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        this.alpha += this.twinkleSpeed;
+        if (this.alpha >= 1 || this.alpha <= 0.2) {
+          this.twinkleSpeed = -this.twinkleSpeed;
+        }
+
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+
+        if (mouse.x && mouse.y) {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 120) {
+            this.x -= dx * 0.01;
+            this.y -= dy * 0.01;
+          }
+        }
+      }
+
+      draw() {
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    initParticles();
+    animateParticles();
+  </script>
 </body>
 </html>
