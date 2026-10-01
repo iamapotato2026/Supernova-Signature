@@ -9,7 +9,6 @@
       font-family: 'Game Paused DEMO';
       src: url('Game Paused DEMO (2).otf') format('opentype');
     }
-
     body {
       margin: 0;
       background-color: #000000;
@@ -73,6 +72,8 @@
       background: rgba(80, 20, 20, 0.8);
       color: white;
       text-align: center;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .input-group button, .reset-btn, .generate-card-btn {
@@ -270,6 +271,10 @@
   
     .action-btn:hover {
       background: #ffffff;
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+}
     }
   </style>
 </head>
@@ -712,6 +717,12 @@
     }
     initParticles();
     animateParticles();
+
+const datePicker = document.getElementById('dateInput');// 
+datePicker.addEventListener('change', (e) => {
+  const selectedDate = e.target.value;
+  fetchSupernovaData(selectedDate); //
+});
   </script>
 </body>
 </html>
