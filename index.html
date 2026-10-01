@@ -111,13 +111,14 @@
 
     h3 {
       font-family: 'Game Paused DEMO';
-      font-size: 4rem;
+      font-size: clamp(2rem, 8vw, 4rem);
       position: relative;
-      white-space: nowrap;
-      margin: 10px;
-      width: max-content;
-      max-width: 95vw;
-      text-align: justify;
+      white-space: normal;
+      word-wrap: break-word;
+      margin: 10px auto;
+      width: 100%;
+      max-width: 90vw;
+      text-align: center;
       background: radial-gradient(
         ellipse at top, 
         #ffffff 20%, 
