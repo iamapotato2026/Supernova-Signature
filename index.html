@@ -74,7 +74,6 @@
       font-weight: bold;
     }
 
-    /* Input styling + Native Mobile Dark Mode Fix */
     .input-group input[type=text], .input-group input[type=date] {
       width: 100%;
       max-width: 320px;
@@ -87,10 +86,9 @@
       text-align: center;
       appearance: none;
       -webkit-appearance: none;
-      color-scheme: dark; /* Native Android/iOS system dark mode rendering for inputs */
+     color-scheme: dark; 
     }
 
-    /* Force WebKit Date Picker Icon Visibility & White Text */
     input[type="date"]::-webkit-calendar-picker-indicator {
       filter: invert(1) !important;
       cursor: pointer;
@@ -662,8 +660,6 @@
         alert("Greeting text copied! Save the opened image to attach.");
       }
     }
-
-    /* Particle Background Engine */
     const canvas = document.getElementById('space-canvas');
     const ctx = canvas.getContext('2d');
 
