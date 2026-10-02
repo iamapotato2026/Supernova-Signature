@@ -2,28 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SUPERNOVA</title>
   <style>
     @font-face {
       font-family: 'Game Paused DEMO';
       src: url('Game Paused DEMO (2).otf') format('opentype');
+      font-display: swap;
     }
-    body {
+
+    *, *::before, *::after {
+      box-sizing: border-box !important;
+    }
+
+    html, body {
       margin: 0;
+      padding: 0;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: hidden !important;
       background-color: #000000;
       color: white;
       text-align: center;
-      font-family: sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
-      overflow-x: hidden;
     }
 
     .background-img {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
+      width: 100% !important;
       height: 100vh;
       object-fit: cover;
       z-index: -2;
@@ -33,7 +42,7 @@
 
     #space-canvas {
       position: fixed;
-      width: 100vw;
+      width: 100% !important;
       height: 100vh;
       z-index: -1;
       top: 0;
@@ -44,9 +53,10 @@
     .card-container {
       position: relative;
       z-index: 10;
+      width: 90%;
       max-width: 500px;
-      margin: 80px auto 20px auto;
-      padding: 40px 20px;
+      margin: 40px auto 20px auto;
+      padding: 20px 15px;
       border-radius: 16px;
     }
     
@@ -56,7 +66,7 @@
       justify-content: center;
       align-items: center;
       gap: 15px;
-      margin-top: 30px;
+      margin-top: 20px;
     }
 
     .input-group label {
@@ -64,25 +74,28 @@
       font-weight: bold;
     }
 
+    /* Input styling + Native Mobile Dark Mode Fix */
     .input-group input[type=text], .input-group input[type=date] {
-      padding: 10px 15px;
+      width: 100%;
+      max-width: 320px;
+      padding: 12px 18px;
       border-radius: 50px;
       font-size: 1rem;
-      border: 1px solid #92434355;
-      background: rgba(80, 20, 20, 0.8);
-      color: white;
+      border: 1px solid rgba(146, 67, 67, 0.35);
+      background: rgba(80, 20, 20, 0.85);
+      color: #ffffff !important;
       text-align: center;
-      -webkit-appearance: none;
       appearance: none;
-      box-sizing: border-box;
+      -webkit-appearance: none;
+      color-scheme: dark; /* Native Android/iOS system dark mode rendering for inputs */
     }
 
-    /* Date Picker Input Fixes for Mobile & Desktop */
+    /* Force WebKit Date Picker Icon Visibility & White Text */
     input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(1);
+      filter: invert(1) !important;
       cursor: pointer;
-      display: block;
-      opacity: 1;
+      opacity: 1 !important;
+      display: block !important;
     }
 
     input[type="date"]::-webkit-datetime-edit,
@@ -116,26 +129,28 @@
       font-style: italic;
       color: white;
       margin: 10px 20px;
-      object-position: center; 
     }
 
     .content {
-      width: 100vw;
+      width: 100% !important;
+      max-width: 100% !important;
       display: flex;
       flex-direction: column;
       align-items: center;
       margin-top: 20px;
+      padding: 0 15px;
     }
 
     h3 {
-      font-family: 'Game Paused DEMO';
-      font-size: clamp(2rem, 8vw, 4rem);
+      font-family: 'Game Paused DEMO', system-ui, sans-serif;
+      font-size: clamp(1.5rem, 6vw, 3rem) !important;
       position: relative;
       white-space: normal;
-      word-wrap: break-word;
+      word-break: break-word;
+      overflow-wrap: anywhere;
       margin: 10px auto;
-      width: 90%;
-      max-width: 90vw;
+      width: 100% !important;
+      max-width: 100% !important;
       text-align: center;
       background: radial-gradient(
         ellipse at top, 
@@ -147,7 +162,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.8);
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.8);
       filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.5));
     }
 
@@ -156,13 +171,12 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
+      width: 100% !important;
       height: 100vh;
       z-index: 10;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
-      box-sizing: border-box;
       padding: 40px 20px;
       overflow-y: auto;
     }
@@ -171,7 +185,8 @@
       position: relative;
       z-index: 2;
       max-width: 650px;
-      padding: 30px;
+      width: 100%;
+      padding: 30px 15px;
       border-radius: 20px;
       margin: auto;
     }
@@ -648,6 +663,7 @@
       }
     }
 
+    /* Particle Background Engine */
     const canvas = document.getElementById('space-canvas');
     const ctx = canvas.getContext('2d');
 
@@ -732,16 +748,6 @@
     }
     initParticles();
     animateParticles();
-
-    const datePicker = document.getElementById('Birthday');
-    if (datePicker) {
-      datePicker.addEventListener('change', (e) => {
-        const selectedDate = e.target.value;
-        if (typeof fetchSupernovaData === 'function') {
-          fetchSupernovaData(selectedDate);
-        }
-      });
-    }
   </script>
 </body>
 </html>
