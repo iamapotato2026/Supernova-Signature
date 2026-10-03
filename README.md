@@ -1,4 +1,4 @@
-                                              SUPERNOVA SIGNATURE
+                                              STARCLUSTER
                                              find your cosmos buddy
 
 OVERVIEW
