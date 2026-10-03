@@ -15,4 +15,5 @@ TECH STACK
 *Frontend- HTML5,CSS,JavaScript
 *Styling and fonts-Custom CSS, Google Fonts
 
-live demo- https://github.com/iamapotato2026/Supernova-Signature.git
+live demo
+https://polite-apricot-cxxnmtnu.edgeone.dev/
