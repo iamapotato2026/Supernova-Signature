@@ -15,5 +15,5 @@ TECH STACK
 *Frontend- HTML5,CSS,JavaScript
 *Styling and fonts-Custom CSS, Google Fonts
 
-live demo
-https://polite-apricot-cxxnmtnu.edgeone.dev/
+Live demo
+https://starcluster.drophost.space
